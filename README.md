@@ -262,7 +262,7 @@ for (const v of videos) {
 | `sort`  | `"latest"` \| `"popular"` | `"latest"` | Sort order               |
 | `limit` | `number`                  | `30`       | Maximum videos to return |
 
-Returns [`ChannelVideo[]`](#channelvideo). `publishedAt` is `null` (only `publishedText` like "5 years ago" is reliable).
+Returns [`ChannelVideo[]`](#channelvideo). `publishedAt` is parsed from relative text (e.g., "2 weeks ago") into an approximate `Date`. It may be `null` if the text can't be parsed.
 
 - **`"latest"`**: InnerTube `/browse` with pagination.
 - **`"popular"`**: InnerTube `/browse` with "Popular" tab filter.
@@ -759,7 +759,7 @@ interface ChannelVideo {
   views: number | null;
   duration: number | null; // seconds
   publishedText: string; // "12 days ago"
-  publishedAt: Date | null; // null when only relative text available
+  publishedAt: Date | null; // approximate, parsed from relative text like "2 weeks ago"
   thumbnailUrl: string | null;
 }
 ```

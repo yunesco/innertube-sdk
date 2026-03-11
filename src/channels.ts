@@ -607,7 +607,7 @@ function extractVideoRendererData(vr: Record<string, unknown>): ChannelVideo | n
     views,
     duration,
     publishedText,
-    publishedAt: null,
+    publishedAt: parseRelativeDate(publishedText),
     thumbnailUrl,
   };
 }
@@ -705,6 +705,32 @@ function extractContinuationVideos(data: Record<string, unknown>): {
   }
 
   return { videos, continuationToken };
+}
+
+// ---------------------------------------------------------------------------
+// Relative date parsing
+// ---------------------------------------------------------------------------
+
+const RELATIVE_DATE_REGEX = /(\d+)\s+(second|minute|hour|day|week|month|year)s?\s+ago/i;
+
+const UNIT_MS: Record<string, number> = {
+  second: 1_000,
+  minute: 60_000,
+  hour: 3_600_000,
+  day: 86_400_000,
+  week: 604_800_000,
+  month: 2_592_000_000, // ~30 days
+  year: 31_536_000_000, // ~365 days
+};
+
+function parseRelativeDate(text: string): Date | null {
+  const match = text.match(RELATIVE_DATE_REGEX);
+  if (!match) return null;
+  const amount = parseInt(match[1], 10);
+  const unit = match[2].toLowerCase();
+  const ms = UNIT_MS[unit];
+  if (!ms) return null;
+  return new Date(Date.now() - amount * ms);
 }
 
 // ---------------------------------------------------------------------------
