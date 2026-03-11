@@ -33,8 +33,11 @@ import * as videoOps from "./videos.js";
  * ```
  */
 export function innertube(config: InnertubeConfig = {}) {
-  const transport = new Transport({ timeout: config.timeout });
-  const api = new InnertubeApi(transport);
+  const transport = new Transport({
+    timeout: config.timeout,
+    fetch: config.fetch,
+  });
+  const api = new InnertubeApi(transport, { getApiKey: config.getApiKey });
 
   // Helper: resolve a video ID from URL or bare ID
   const resolveVideoId = (input: string): string => {

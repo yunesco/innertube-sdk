@@ -3,14 +3,16 @@ import { InnertubeError } from "./types.js";
 const DEFAULT_TIMEOUT_MS = 15_000;
 
 /**
- * HTTP transport layer. Wraps globalThis.fetch with automatic timeout
- * via AbortController.
+ * HTTP transport layer. Wraps fetch with automatic timeout via AbortController.
+ * Uses custom fetch when provided (e.g. for proxy/IP rotation), otherwise global fetch.
  */
 export class Transport {
   private readonly timeoutMs: number;
+  private readonly fetchFn: (url: string, init?: RequestInit) => Promise<Response>;
 
-  constructor(config: { timeout?: number }) {
+  constructor(config: { timeout?: number; fetch?: (url: string, init?: RequestInit) => Promise<Response> }) {
     this.timeoutMs = config.timeout ?? DEFAULT_TIMEOUT_MS;
+    this.fetchFn = config.fetch ?? globalThis.fetch;
   }
 
   /** Send an HTTP request. */
@@ -30,7 +32,7 @@ export class Transport {
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 
     try {
-      const res = await globalThis.fetch(url, { ...init, signal: controller.signal });
+      const res = await this.fetchFn(url, { ...init, signal: controller.signal });
       clearTimeout(timer);
       return res;
     } catch (err) {

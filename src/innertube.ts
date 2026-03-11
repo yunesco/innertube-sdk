@@ -44,8 +44,8 @@ class MemoryCache {
 
 /**
  * Core InnerTube API layer. Handles:
- * - API key scraping from YouTube homepage
- * - In-memory key caching
+ * - API key scraping from YouTube homepage (or app-provided getApiKey)
+ * - In-memory key caching (when not using getApiKey)
  * - Automatic key rotation on 400 invalid-key responses
  * - Authenticated POST to InnerTube v1 endpoints
  */
@@ -54,15 +54,24 @@ export class InnertubeApi {
   private keyPromise: Promise<string> | null = null;
   private readonly transport: Transport;
   private readonly cache = new MemoryCache();
+  private readonly externalGetApiKey?: (forceRefresh?: boolean) => Promise<string>;
 
   private static readonly CACHE_KEY = "innertube:innertube_api_key";
 
-  constructor(transport: Transport) {
+  constructor(
+    transport: Transport,
+    options?: { getApiKey?: (forceRefresh?: boolean) => Promise<string> },
+  ) {
     this.transport = transport;
+    this.externalGetApiKey = options?.getApiKey;
   }
 
-  /** Get the current InnerTube API key, scraping it if necessary. */
+  /** Get the current InnerTube API key, scraping it if necessary (or via app-provided getApiKey). */
   async getApiKey(forceRefresh = false): Promise<string> {
+    if (this.externalGetApiKey) {
+      return this.externalGetApiKey(forceRefresh);
+    }
+
     if (!forceRefresh) {
       if (this.key) return this.key;
       if (this.keyPromise) return this.keyPromise;

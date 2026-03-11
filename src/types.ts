@@ -244,6 +244,18 @@ export interface EngagementPeak {
 export interface InnertubeConfig {
   /** Request timeout in milliseconds. Default: 15000. */
   timeout?: number;
+  /**
+   * Custom fetch implementation (e.g. proxyFetch for proxy/IP rotation).
+   * If omitted, uses global `fetch`.
+   */
+  fetch?: (url: string, init?: RequestInit) => Promise<Response>;
+  /**
+   * App-level API key provider (e.g. Redis-backed cache).
+   * When provided, the SDK calls this instead of scraping the key itself.
+   * `forceRefresh === true` when the SDK gets a 400 due to invalid key.
+   * If omitted, the SDK keeps its in-memory scraping behavior.
+   */
+  getApiKey?: (forceRefresh?: boolean) => Promise<string>;
 }
 
 // ---------------------------------------------------------------------------

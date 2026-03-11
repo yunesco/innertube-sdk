@@ -65,6 +65,6 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/younes/innertube-sdk"
+    "url": "git+https://github.com/yunesco/innertube-sdk.git"
   }
 }
