@@ -1,6 +1,6 @@
 {
   "name": "innertube-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "YouTube InnerTube API client for video metadata, transcripts, heatmaps, and channel data",
   "author": "Younes",
   "license": "MIT",
