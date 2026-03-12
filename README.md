@@ -91,7 +91,7 @@ const yt = innertube({ timeout: 20000 });
 | `fetch`      | `(url: string, init?: RequestInit) => Promise<Response>`             | —       | Custom fetch (e.g. `proxyFetch` for proxy/IP rotation). Uses global `fetch` if omitted. |
 | `getApiKey`  | `(forceRefresh?: boolean) => Promise<string>`                        | —       | App-level API key provider (e.g. Redis-backed). Uses in-memory scraping if omitted. `forceRefresh === true` when SDK gets 400 due to invalid key. |
 
-**Example: ScriptDNA integration (proxy + Redis-backed API key cache)**
+**Example: custom proxy + Redis-backed API key cache**
 
 ```ts
 const yt = innertube({
